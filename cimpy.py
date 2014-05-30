@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
-import math
+#import math
 # import sys
 import numpy as np
+import matplotlib.pyplot as plt
 # import vtk
 
 # All returned arrays are cast into either numpy or numarray arrays
@@ -23,11 +24,11 @@ class Tmesh:
       if filename[-2:].lower() == ".t":
         print "Mesh filename is valid and ready for reading ..."
         self.name = filename.split()[0]
-        self.point_array = [] # TODO: obsolete ... replaced by dictionary
+#        self.point_array = [] # TODO: obsolete ... replaced by dictionary
         self.nodes_dict = {} # or =dict()        
         self.elements_dict = {} # or =dict()        
        
-        self.element_array = [] # TODO: obsolete ... replaced by dictionary
+#        self.element_array = [] # TODO: obsolete ... replaced by dictionary
         self.Parse_input_file(filename)
       elif filename[-4:].lower() == ".msh":
         print "Coming soon: convert " + filename + " to a cimlib compatible mesh format (Tmesh) ? "
@@ -55,28 +56,52 @@ class Tmesh:
            
       for i in range(self.nbNodes): 
           a_new_node = Tnode(i+1, f.readline().strip().split())
-          # TODO obsolete line
-          self.point_array.append(a_new_node) 
+#          self.point_array.append(a_new_node)  # TODO obsolete line
           self.nodes_dict[i+1] = a_new_node.coordinates
      
-      # A fictitious node can be considered
+      # A fictitious node should be considered (but NOT USED FOR MESH VIEW)
       self.nodes_dict[0]=[0,0]
           
-     # nodes_dict is map of points IDs and their coordinates
+     # nodes_dict is a map of points IDs and their coordinates
      # To access the coordinates of a node:  nodes_dict[node_id]
      # To access a component in the coord: nodes_dict[node_id][component]
-          
-      
-          
-       # TODO : supress blank lines between nodes coord and the element connectivity   
+                      
+     # TODO : supress blank lines between nodes coord and the element connectivity   
           
       for i in range(self.nbElements): 
           a_new_element = Telement(i+1, f.readline().strip().split(), self)
-          self.element_array.append(a_new_element)  
+#          self.element_array.append(a_new_element)   # TODO obsolete line
           self.elements_dict[i+1] = a_new_element.connectivity
           
       f.close()
-          
+      
+      
+  def View(self):
+      """ Plots the mesh in a figure. Supports only 2D mesh for now  """
+
+      """ a dict constructor is necessary so that the class's member
+      dictionary wont be affected when fictitious triangles are suppressed"""
+      real_elements_dict = dict(self.elements_dict)
+
+      # the 'enumerate' function is really nice !
+      for i,connec_list in enumerate(real_elements_dict.values()):
+         if 0 in connec_list : del real_elements_dict[i]
+     
+      # The lists have to be cast into numpy arrays before using the TRI plot
+      nodes_coord = np.asarray(self.nodes_dict.values())
+      triangles = np.asarray(real_elements_dict.values())
+     
+      # Extracting columns
+      x = nodes_coord[:,0]
+      y = nodes_coord[:,1]
+      
+      plt.figure()
+      plt.gca().set_aspect('equal')
+      plt.triplot(x, y, triangles, 'go-')
+      plt.title('Mesh')
+    
+      plt.show() 
+      
       
   ### Getters ###    
       
@@ -100,28 +125,6 @@ class Tmesh:
       """ returns a node coordinates from the index """
       return self.nodes_dict[point_id]
       
-#  def PrintListOfPoints(self):
-#      """ prints a list of all the nodes indices and coordinates """
-#      list = ""
-#      print "NODE ID \t NODE COORDINATE \n"
-#      for node in self.point_array :
-#         list += str(node.index) + str("\t") + str(node.coordinates) + str("\n")
-#      print list
-      
-#  def GetArrayOfPointsCoordinates(self, filename= None):
-#      """ returns an array containing the nodes coordinates """
-#      coord_list = []
-#      for node in self.point_array:          
-#          coord_list.append(node.coordinates) 
-#      
-#      if filename is not None:
-#          g = open(filename, "w")
-#          for node in self.point_array:  
-#              g.write(node.GetCoordinateString(self.dimNode))
-#          g.close()
-#      
-#      return coord_list  
-
   def NodesToFile(self, filename= None):
       """ returns an array containing the nodes coordinates """
      
@@ -159,12 +162,13 @@ class Tmesh:
       """ returns the element from the index"""
       """ not implemented """
       return element_id    
-               
+  
+#==================================================             
       
       
       
       
-      
+#==================================================      
 class Tnode:
   """Point object with coordinates and  index information"""
   
@@ -179,10 +183,11 @@ class Tnode:
 #         return str(self.coordinates[0]) + str("\t") + str(self.coordinates[1]) + str("\n")
 #     elif dimension == 3:
 #            return str(self.coordinates[0]) + str("\t") + str(self.coordinates[1]) + str("\t") + str(self.coordinates[2]) + str("\n")
-#      
+#             
+#==================================================
 
-       
 
+#==================================================
 class Telement:
   """Element object with node indices and element index information"""
   
@@ -209,17 +214,10 @@ class Telement:
     if self.dimension == 4: self.node4 = nodes_dic[id4]
     
     
-    
-    
   def GetConnectivityString(self, dimension):
      if dimension == 2:
          return str(self.connectivity[0]) + str("\t") + str(self.connectivity[1]) + str("\t") + str(self.connectivity[2]) + str("\n")
      elif dimension == 3:
             return str(self.connectivity[0]) + str("\t") + str(self.connectivity[1]) + str("\t") + str(self.connectivity[2]) +  + str("\t") + str(self.connectivity[3]) + str("\n")
-      
-  def draw_contour(self, nodes_list):
-      """ not impl yet """
-#     for node in nodes_list:
-#           if node.index == self.connectivity
-      return nodes_list
-    
+
+#==================================================
