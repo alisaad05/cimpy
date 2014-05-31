@@ -54,10 +54,9 @@ class Tmesh:
       self.dimElement = int(self.dimElement)
       self.dimNode = int(self.dimNode)
            
-      for i in range(self.nbNodes): 
-          a_new_node = Tnode(i+1, f.readline().strip().split())
-#          self.point_array.append(a_new_node)  # TODO obsolete line
-          self.nodes_dict[i+1] = a_new_node.coordinates
+      for i in xrange(self.nbNodes): 
+          node = f.readline().strip().split()
+          self.nodes_dict[i+1] = map(float, node)
      
       # A fictitious node should be considered (but NOT USED FOR MESH VIEW)
       self.nodes_dict[0]=[0,0]
@@ -66,18 +65,22 @@ class Tmesh:
      # To access the coordinates of a node:  nodes_dict[node_id]
      # To access a component in the coord: nodes_dict[node_id][component]
                       
-     # TODO : supress blank lines between nodes coord and the element connectivity   
-          
-      for i in range(self.nbElements): 
-          a_new_element = Telement(i+1, f.readline().strip().split(), self)
-#          self.element_array.append(a_new_element)   # TODO obsolete line
-          self.elements_dict[i+1] = a_new_element.connectivity
+      line = f.readline().strip().split()
+#
+      while len(line) == 0 : line = f.readline().strip().split()
+      connectivity = line # first non blank line
+
+ 
+      for i in xrange(self.nbElements):           
+          self.elements_dict[i+1] = map(int, connectivity)
+          connectivity = f.readline().strip().split()
           
       f.close()
       
       
-  def View(self):
+  def View(self, **kwargs):
       """ Plots the mesh in a figure. Supports only 2D mesh for now  """
+      #TODO: check Poly3DCollection(verts, *args, **kwargs) for 3D
 
       """ a dict constructor is necessary so that the class's member
       dictionary wont be affected when fictitious triangles are suppressed"""
@@ -85,7 +88,8 @@ class Tmesh:
 
       # the 'enumerate' function is really nice !
       for i,connec_list in enumerate(real_elements_dict.values()):
-         if 0 in connec_list : del real_elements_dict[i]
+         if 0 in connec_list : del real_elements_dict[i+1]
+         # i+1 because enumerate starts at 0 while my dict starts at 1 
      
       # The lists have to be cast into numpy arrays before using the TRI plot
       nodes_coord = np.asarray(self.nodes_dict.values())
@@ -94,10 +98,10 @@ class Tmesh:
       # Extracting columns
       x = nodes_coord[:,0]
       y = nodes_coord[:,1]
-      
+           
       plt.figure()
       plt.gca().set_aspect('equal')
-      plt.triplot(x, y, triangles, 'go-')
+      plt.triplot(x, y, triangles, **kwargs)
       plt.title('Mesh')
     
       plt.show() 
@@ -141,6 +145,24 @@ class Tmesh:
               g.write(x + "\t" + y + "\t" + z)
               if id < self.nbNodes : g.write("\n")
           g.close()
+          
+  def ElementsToFile(self, filename= None):
+      """ returns an array containing the triangles / connectivity"""
+      
+      if filename is None:
+         print "The output filename is not specified ... aborting"
+      else:
+          g = open(filename, "w")
+          for id in range(1,self.nbElements+1): 
+             s= ""
+             for node in self.elements_dict[id]:
+                  s += str(node)+ "\t"
+            
+             if self.dimElement == 4: s += str(self.elements_dict[id][4])
+               
+             g.write(s)
+             if id < self.nbElements : g.write("\n")
+          g.close()
     
     
 #  def GetArrayOfConnectivity(self, filename= None):
@@ -164,10 +186,7 @@ class Tmesh:
       return element_id    
   
 #==================================================             
-      
-      
-      
-      
+     
 #==================================================      
 class Tnode:
   """Point object with coordinates and  index information"""
@@ -185,7 +204,6 @@ class Tnode:
 #            return str(self.coordinates[0]) + str("\t") + str(self.coordinates[1]) + str("\t") + str(self.coordinates[2]) + str("\n")
 #             
 #==================================================
-
 
 #==================================================
 class Telement:
