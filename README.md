@@ -8,3 +8,6 @@ CHANGE LOG
 Version 0.0.1
 - implemented the Tmesh class to handle cimlib mesh files (import and visualization)
 - implmented mesh specific classes Tnode and Telement
+
+Version 0.0.2
+- implemented the View() function to preview mesh with matplotlib
