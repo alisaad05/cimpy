@@ -59,7 +59,11 @@ class Tmesh:
           self.nodes_dict[i+1] = map(float, node)
      
       # A fictitious node should be considered (but NOT USED FOR MESH VIEW)
-      self.nodes_dict[0]=[0,0]
+      if self.dimNode == 2:
+          self.nodes_dict[0]=[0,0]
+      elif self.dimNode == 3:
+          self.nodes_dict[0]=[0,0,0]
+      else : raise Exception ("dimNode ("+ str(self.dimNode) + ") should be 2 or 3")
           
      # nodes_dict is a map of points IDs and their coordinates
      # To access the coordinates of a node:  nodes_dict[node_id]
@@ -98,6 +102,8 @@ class Tmesh:
       # Extracting columns
       x = nodes_coord[:,0]
       y = nodes_coord[:,1]
+      if self.dimNode == 3:
+          z = nodes_coord[:,2]
            
       plt.figure()
       plt.gca().set_aspect('equal')
