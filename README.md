@@ -11,3 +11,8 @@ Version 0.0.1
 
 Version 0.0.2
 - implemented the View() function to preview mesh with matplotlib
+
+Version 0.0.3
+- added a 3d mesh file to test a new visualization feature in the View() function for 3D meshes
+
+
