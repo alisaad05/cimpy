@@ -12,9 +12,9 @@ from mpl_toolkits.mplot3d import Axes3D
 
 
 
-mesh = cim.Tmesh("CET_petit.t") # para_mesh.t  # CET_petit # mesh3d
-#mesh.View("mpl")
-#mesh.View("myv")
+mesh = cim.Tmesh("files/mesh3d.t") # para_mesh.t  # CET_petit # mesh3d #
+mesh.View("mpl")
+mesh.View("myv")
 
 
 

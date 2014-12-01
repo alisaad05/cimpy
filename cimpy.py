@@ -18,6 +18,9 @@ from tvtk.api import tvtk
 
 # TODO : implement class create_grid(filename) to link with Struct_mesh_generator.cpp ==> possible use of ctypes wrapping ??
 
+# TODO:  check doctest to parse unit tests in docstrings and run them ... can replace the "tutoriaux_testes" in cimlib
+# TODO:  https://docs.python.org/2/library/doctest.html
+
 class Tmesh:
   """Mesh object containing nodes and elements, as well connectivity and dimension information"""
   
@@ -91,25 +94,28 @@ class Tmesh:
       
       
   def View(self, engine = "mpl" , **kwargs):
-      """ Plots the mesh in a figure. Supports only 2D and 3D mesh
-      @param engine = 'mpl'  to use a matplotlib as 2D and 3D scatter plotting backend
-                    = 'myv' (default) to use Mayavi for 2D and 3D mesh rendering (using tvtk)
-                    
-      @param **kwargs
-              if 'engine' argument is set to "mpl" then Matplotlib's line keywords are used:
-                  
-                linestyle or ls	: '-' , '--' , '-.' ...
-                linewidth or lw	float value in points
-                marker: 'x' , 'o' , 'v' ...
-                color: 'r' (red), 'k' (black) , 'b' (blue) ...
-                [check url: http://matplotlib.org/1.3.1/api/artist_api.html#module-matplotlib.lines]
-                  
-              
-              if 'engine' argument is set to "myv" then Matplotlib's keywords are used:
-                  
-                color:	the color of the vtk object. Overides the colormap, if any, when specified. This is specified as a triplet of float ranging from 0 to 1, eg (1, 1, 1) for white.
-                colormap:	type of colormap to use.
-                extent:	[xmin, xmax, ymin, ymax, zmin, zmax] Default is the x, y, z arrays extent. Use this to change the extent of the object created.
+      """ 
+          Plots the mesh in a figure. Supports 2D and 3D mesh with two visualization backends. Call signature ::\n
+         
+                 Tmesh.View()
+          
+          - engine: 
+            -  `mpl` to use a matplotlib as 2D and 3D scatter plotting backend
+            -  `myv` (default) to use Mayavi for 2D and 3D mesh rendering (using `tvtk`)
+          - kwargs:
+              - if 'engine' argument is set to `mpl` then Matplotlib's keywords are used:
+                  - linestyle or ls	: '-' , '--' , '-.' ...
+                  - linewidth or lw	float value in points
+                  - marker: 'x' , 'o' , 'v' ...
+                  - color: 'r' (red), 'k' (black) , 'b' (blue) ...
+                  - [check url: http://matplotlib.org/1.3.1/api/artist_api.html#module-matplotlib.lines] \n\n
+          
+          
+         - if 'engine' argument is set to "myv" then Mayavi's keywords are used:
+          
+           - color:	the color of the vtk object. Overides the colormap, if any, when specified. This is specified as a triplet of float ranging from 0 to 1, eg (1, 1, 1) for white.
+           - colormap:	type of colormap to use.
+           - extent:	[xmin, xmax, ymin, ymax, zmin, zmax] Default is the x, y, z arrays extent. Use this to change the extent of the object created.
       """
       
       dim = self.dimNode 
