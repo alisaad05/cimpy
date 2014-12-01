@@ -21,6 +21,7 @@ from tvtk.api import tvtk
 # TODO:  check doctest to parse unit tests in docstrings and run them ... can replace the "tutoriaux_testes" in cimlib
 # TODO:  https://docs.python.org/2/library/doctest.html
 
+#HINT: to parse a **kwargs input, one can use "has_key"
 class Tmesh:
   """Mesh object containing nodes and elements, as well connectivity and dimension information"""
   
